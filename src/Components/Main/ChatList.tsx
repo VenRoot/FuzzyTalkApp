@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Text, TouchableOpacity, View, Image, ScrollView} from "react-native"
+import { Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator} from "react-native"
 import Toast, {ToastConfig} from "react-native-toast-message"
 import FirstNames from "../../Assets/first-names.json"
 import LastNames from "../../Assets/last-names.json"
@@ -7,6 +7,21 @@ import LastNames from "../../Assets/last-names.json"
 
 export default function ChatList()
 {
+    const [loading, setLoading] = React.useState(true);
+    const [pics, setPics] = React.useState<string[]>([]);
+
+    // Load the function getAllProfilePics() and set the state of pics to the result
+    useEffect(() => {
+        const fetchProfilePictures = async () => {
+            const pics = await getAllProfilePics() as string[];
+            setPics(pics);
+            setLoading(false);
+        }
+        fetchProfilePictures();
+    }, []);
+
+    if(loading) return <LoadingScreen />
+
     return <View style={{
         backgroundColor: "#252525",
         display: "flex",
@@ -15,28 +30,14 @@ export default function ChatList()
         <Text>ChatList</Text>
         <ScrollView>
 
-            {(new Array(50)).fill(0).map((_, i) => <ChatListItem key={i} />)} 
+            {(new Array(50)).fill(0).map((_, i) => <ChatListItem pics={pics} key={i} />)} 
         </ScrollView>
     </View>
 }
 
-function ChatListItem()
+function ChatListItem({pics}: {pics: string[]})
 {
-
-    const [pic, setPic] = React.useState<string | ArrayBuffer>();
-    useEffect(() => {
-        const fetchProfilePicture = async () => {
-            const response = await fetch("https://thispersondoesnotexist.com/");
-            const data = await response.blob().then(blob => new Promise<string | ArrayBuffer>((resolve, reject) =>
-                {
-                    const reader = new FileReader();
-                    reader.onload = function() { resolve(reader.result);}
-                    reader.readAsDataURL(blob);
-                }));
-            setPic(data);
-        }
-        fetchProfilePicture();
-    }, [])
+    const [pic, setPic] = React.useState(pics[Math.floor(Math.random() * pics.length)]);
 
     // Pick a number between 1 and 7
     const num = Math.floor(Math.random() * 7) + 1;
@@ -44,7 +45,7 @@ function ChatListItem()
     const message = generateRandomMessages();
     const showToast = makeMessageToast({
         text: "Hello World",
-        profilePicture: "https://picsum.photos/200",
+        profilePicture: pic,
         name: "John Doe"
     });
     return <TouchableOpacity
@@ -55,14 +56,17 @@ function ChatListItem()
         marginBottom: 10
 
     }}>
-        <Image source={{
+        <Image
+        source={{
             uri: pic as string,
             width: 50,
-            height: 50,
-        }} key="Image01" style={{
+            height: 50
+        }} 
+        style={{
             borderRadius: 50,
             flex: 0
-        }}></Image>
+        }} />
+        
         <View style={{ flex: 1, paddingLeft: 10, }}>
             <Text style={{
                 color: "white",
@@ -75,6 +79,17 @@ function ChatListItem()
         </View>
         
     </TouchableOpacity>
+}
+
+function LoadingScreen()
+{
+    return <View style={{
+        backgroundColor: "#252525",
+        display: "flex",
+        flexDirection: "column"
+    }}>
+        <ActivityIndicator size="large" />
+    </View>
 }
 
 function makeMessageToast({text, profilePicture, name}: {text: string, profilePicture: string, name: string})
@@ -101,6 +116,36 @@ function makeMessageToast({text, profilePicture, name}: {text: string, profilePi
     }
 }
 
+async function getAllProfilePics()
+{
+    const allURIs = Array.from({length: 100}, (_, i) => "http://192.168.178.3:3005/randomImage/"+i);
+
+    const Promises = allURIs.map((uri) => {
+        return fetch(uri).then((response) => {
+            return response.blob();
+        }).then((blob) => {
+            return new Promise<string | ArrayBuffer>((resolve, reject) =>
+            {
+                const reader = new FileReader();
+                reader.onload = function() { resolve(reader.result);}
+                reader.readAsDataURL(blob);
+            });
+        });
+    })
+    const pics = await Promise.all(Promises);
+    return pics; 
+    const response = await fetch("http://192.168.178.3:3005/randomImage").catch(err => {
+        if(err) console.trace(err);
+    })
+    const data = await response?.blob().then(blob => new Promise<string | ArrayBuffer>((resolve, reject) =>
+        {
+            const reader = new FileReader();
+            reader.onload = function() { resolve(reader.result);}
+            reader.readAsDataURL(blob);
+        }));
+    return data;
+}
+
 function generateRandomName()
 {
     const firstName = FirstNames[Math.floor(Math.random() * FirstNames.length)];
@@ -108,11 +153,17 @@ function generateRandomName()
     return `${firstName} ${lastName}`;
 }
 
-async function getRandomProfilePicture()
+function GetRandomProfilePicture()
 {
-    const response = await fetch("https://thispersondoesnotexist.com/");
-    const data = await response.blob().then(blob => URL.createObjectURL(blob));
-    return data;
+    return <Image source={{
+        uri: "http://localhost:3005/randomImage",
+        width: 50,
+        height: 50
+    }}
+    style={{
+            borderRadius: 50,
+            flex: 0
+        }}></Image>
 }
 
 function generateRandomMessages()

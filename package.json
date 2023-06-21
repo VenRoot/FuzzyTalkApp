@@ -7,12 +7,14 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
+    "startimageserver": "ts-node ./imageServer.ts",
     "test": "jest"
   },
   "dependencies": {
     "@react-native-material/core": "^1.3.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+    "express": "^4.18.2",
     "react": "18.2.0",
     "react-native": "0.71.11",
     "react-native-material-ui": "^1.30.1",
@@ -27,6 +29,7 @@
     "@babel/runtime": "^7.20.0",
     "@react-native-community/eslint-config": "^3.2.0",
     "@tsconfig/react-native": "^2.0.2",
+    "@types/express": "^4.17.17",
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.24",
     "@types/react-native-material-ui": "^1.32.3",
