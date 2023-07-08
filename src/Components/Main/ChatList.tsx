@@ -9,11 +9,17 @@ export default function ChatList()
 {
     const [loading, setLoading] = React.useState(true);
     const [pics, setPics] = React.useState<string[]>([]);
+    const [error, setError] = React.useState(false);
 
     // Load the function getAllProfilePics() and set the state of pics to the result
     useEffect(() => {
         const fetchProfilePictures = async () => {
-            const pics = await getAllProfilePics() as string[];
+            const pics = await getAllProfilePics().catch(err => {
+                if(err) {
+                    console.error(err);
+                    setError(true);
+                }
+            }) as string[];
             setPics(pics);
             setLoading(false);
         }
@@ -21,6 +27,11 @@ export default function ChatList()
     }, []);
 
     if(loading) return <LoadingScreen />
+    if(error) return <Text style={{
+        color: "black"
+    }}>
+        There was an error from the network. Please try again later.
+    </Text>
 
     return <View style={{
         backgroundColor: "#252525",
