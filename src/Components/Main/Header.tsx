@@ -1,33 +1,45 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Avatar } from "@react-native-material/core";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, NavigationProp } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Header } from "@rneui/themed";
+import LinearGradient from 'react-native-linear-gradient';
 
-const Stack = createNativeStackNavigator();
-
-
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{
-        fontSize: 30,
-        color: 'red',
-        fontStyle: 'italic',
-      }}>Home Screen</Text>
-    </View>
-  );
-}
-
-
-export default function Navigation()
+export default function _Header({navigation}: {navigation: NavigationProp<any>})
 {
-  return (
-      <Stack.Navigator>
-        <Stack.Screen name="Home uwu" component={HomeScreen}
-        options={{
-          title: "My home",
-        }} />
-        </Stack.Navigator>
-  );
+  return <Header
+  style={{
+    height: "40%",
+    width: "100%",
+    flexDirection: "row"
+  }}
+  leftComponent={
+    <Text style={{
+      flexShrink: 0,
+      width: "300%",
+      color: "#fff",
+      fontSize: 30,
+      fontWeight: "bold",
+      fontFamily: "Arial",
+      paddingLeft: 10,
+    }}
+
+    onLongPress={() => {
+      navigation.navigate("ExampleTest");
+    }}
+      >
+        FuzzyTalk
+      </Text>
+  }
+  rightComponent={
+    <Avatar />
+  }
+  ViewComponent={LinearGradient}
+  linearGradientProps={{
+    colors: ['#000000', '#444444'],
+    start: { x: 0, y: 0.1 },
+    end: { x: 1, y: 0.1 },
+  }}
+  />
 }

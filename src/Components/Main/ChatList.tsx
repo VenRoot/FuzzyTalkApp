@@ -1,12 +1,15 @@
 import React, { useEffect } from "react"
+import { NavigationProp, useNavigation } from "@react-navigation/native"
 import { Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator} from "react-native"
 import Toast, {ToastConfig} from "react-native-toast-message"
 import FirstNames from "../../Assets/first-names.json"
 import LastNames from "../../Assets/last-names.json"
+import { Navigations } from "../../types/Navigations"
 
 
-export default function ChatList()
+export default function ChatList({navigation}: {navigation: NavigationProp<any>})
 {
+    const [retry, setRetry] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [pics, setPics] = React.useState<string[]>([]);
     const [error, setError] = React.useState(false);
@@ -14,53 +17,77 @@ export default function ChatList()
     // Load the function getAllProfilePics() and set the state of pics to the result
     useEffect(() => {
         const fetchProfilePictures = async () => {
-            const pics = await getAllProfilePics().catch(err => {
-                if(err) {
-                    console.error(err);
-                    setError(true);
-                }
-            }) as string[];
-            setPics(pics);
+            setRetry(false);
+            let pics;
+
+            try {
+                pics = await getAllProfilePics()
+            }
+            catch(err)  {
+                console.error(err);
+                setError(true);
+                setLoading(false);
+                return; // Verlässt die Funktion fetchProfilePictures, wenn ein Fehler auftritt
+            }
+            setError(false);
+            setPics(pics as any);
             setLoading(false);
         }
         fetchProfilePictures();
-    }, []);
+    }, [retry]);
 
     if(loading) return <LoadingScreen />
-    if(error) return <Text style={{
-        color: "black"
-    }}>
-        There was an error from the network. Please try again later.
-    </Text>
-
+    if(error) return <View>
+            <Text style={{
+            color: "black"
+        }}>
+            There was an error fetching the data. Please try again later.
+        </Text>
+        <TouchableOpacity
+        onPress={() => setRetry(true)}
+        style={{
+            backgroundColor: "#0b93f6",
+            padding: 10,
+            borderRadius: 10,
+            marginTop: 10
+        }}>
+            <Text style={{
+                color: "white"
+            }}>Retry</Text>
+        </TouchableOpacity>
+        </View>
+        
     return <View style={{
         backgroundColor: "#252525",
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        padding: 10,
+        width: "100%",
     }}>
-        <Text>ChatList</Text>
         <ScrollView>
 
-            {(new Array(50)).fill(0).map((_, i) => <ChatListItem pics={pics} key={i} />)} 
+            {(new Array(50)).fill(0).map((_, i) => <ChatListItem name={generateRandomName()} navigation={navigation} pic={pics[Math.floor(Math.random() * pics.length)]} key={i} />)} 
         </ScrollView>
     </View>
 }
 
-function ChatListItem({pics}: {pics: string[]})
+function ChatListItem({name, pic, navigation}: {name: string, pic: string, navigation: NavigationProp<any>})
 {
-    const [pic, setPic] = React.useState(pics[Math.floor(Math.random() * pics.length)]);
-
     // Pick a number between 1 and 7
     const num = Math.floor(Math.random() * 7) + 1;
-    const name = generateRandomName();
     const message = generateRandomMessages();
     const showToast = makeMessageToast({
         text: "Hello World",
         profilePicture: pic,
         name: "John Doe"
     });
+
+    const handlePress = () => {
+        navigation.navigate<Navigations>("ChatWindow", {name: name, profilePicture: pic, lastSeen: new Date() });
+    }
+
     return <TouchableOpacity
-    onPress={showToast}
+    onPress={handlePress}
     style={{
         display: "flex",
         flexDirection: "row",
@@ -145,16 +172,6 @@ async function getAllProfilePics()
     })
     const pics = await Promise.all(Promises);
     return pics; 
-    const response = await fetch("http://192.168.178.3:3005/randomImage").catch(err => {
-        if(err) console.trace(err);
-    })
-    const data = await response?.blob().then(blob => new Promise<string | ArrayBuffer>((resolve, reject) =>
-        {
-            const reader = new FileReader();
-            reader.onload = function() { resolve(reader.result);}
-            reader.readAsDataURL(blob);
-        }));
-    return data;
 }
 
 function generateRandomName()

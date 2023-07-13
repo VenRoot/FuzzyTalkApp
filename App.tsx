@@ -26,12 +26,15 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 
-import Main from './src/Pages/Main';
-import Navigation from './src/Components/Main/Header';
+import Main from './src/Pages/Home';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from './src/Pages/Main';
 import Toast, {ToastConfig, ToastConfigParams, ToastPosition, ToastShowParams, ToastType} from 'react-native-toast-message';
+import ChatWindow from './src/Pages/ChatWindow';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import ExampleGiftedChat from "./src/examples/giftedChat/chat";
+import OwnGiftedChat from "./src/Components/Chat/giftedChat/GiftedChat";
 
 const Stack = createNativeStackNavigator();
 
@@ -104,16 +107,25 @@ function OldCode({isDarkMode, backgroundStyle}:{isDarkMode: boolean, backgroundS
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
     <>
+    <SafeAreaProvider>
     <NavigationContainer>
-     <Main />
+      <Stack.Navigator initialRouteName='Main'>
+        {/* We can either pass the component via the component prop */}
+        <Stack.Screen name="Main" component={Main} options={{animation: "fade", headerShown: false}} />
+        {/* Or we can pass it as a children to specify our own props if needed */}
+        {/* <Stack.Screen name="ChatWindow" options={{ animation: "fade", headerShown: false }}>
+          {(props) => <ChatWindow navigationProps={props} name={""} lastSeen={props.navigation.lastSeen}/>}
+        </Stack.Screen> */}
+        <Stack.Screen name="ChatWindow" component={ChatWindow} options={{animation: "fade", headerShown: false}} />
+        <Stack.Screen name="ExampleTest" options={{ animation: "fade", headerShown: false }}>
+          {(props) => <OwnGiftedChat/>}
+        </Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
     <Toast config={toastConfig} />
+    </SafeAreaProvider>
     </>
     
   );
