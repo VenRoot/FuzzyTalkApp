@@ -43,7 +43,7 @@ const Chats = () => {
       renderAvatarOnTop
       renderUsernameOnMessage
       bottomOffset={26}
-      onPressAvatar={console.log}
+      onPressAvatar={() => {}}
       renderInputToolbar={renderInputToolbar}
       renderActions={renderActions}
       renderComposer={renderComposer}

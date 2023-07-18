@@ -11,6 +11,8 @@ export default function _Header({lastSeen, name, navigation, profilePicture}: {l
 
   const nav = navigation;
 
+  console.log(lastSeen);
+
   function pressBackButton(event: GestureResponderEvent) {
     if(nav?.canGoBack()) nav.goBack();
   }
@@ -23,49 +25,52 @@ export default function _Header({lastSeen, name, navigation, profilePicture}: {l
       }}
 
       leftComponent={
-        <RenderBackButton onPress={pressBackButton} />
+        <View style={{ left: "-10%" }}>
+          <RenderBackButton onPress={pressBackButton} />
+        </View>
       }
-
-      // leftComponent={
-      //     <Icon name="arrow-back" color="#ffffff" size={40} type="material" />
-      // }
 
       centerComponent={
         <View style={{
           flex: 1,
           flexDirection: "row",
-          width: "100%",
+          width: "120%",
           justifyContent: "flex-start",
         }}>
           <RenderAvatar name={name} size={50} profilePicture={profilePicture} />
-          <View>
+          <View style={{ width: "135%"}}>
             <Text style={{
               flexShrink: 1,
               overflow: "hidden",
               flex: 1,
-              paddingLeft: 10,
-              width: "50%",
+              paddingLeft: 8,
+              width: "55%",
               color: "#fff",
-              fontSize: 25,
+              fontSize: 20,
               fontWeight: "bold",
               fontFamily: "Arial",
               textAlign: "left",
               alignSelf: "flex-start",
             }}
+            minimumFontScale={0.5}
+            numberOfLines={1}
             >
+              {/* {"BIG LONG ASS NAME FOR ENJOYMENT"} */}
               {name}
             </Text>
             <Text style={{
               paddingLeft: 10,
             }}>
-              last seen {lastSeen?.toLocaleTimeString().split(":").slice(0, 2).join(":")}
+              last seen {new Date(lastSeen).toLocaleTimeString().split(":").slice(0, 2).join(":")}
             </Text>
           </View>
           
         </View>
       }
       rightComponent={
-        <RenderMenuButton onPress={() => {}} />
+        <View style={{ height: "1%", left: "10%"}}>
+          <RenderMenuButton onPress={() => {}} />
+        </View>
       }
 
       ViewComponent={LinearGradient}
@@ -89,7 +94,7 @@ interface AvatarProps {
 
 function RenderBackButton({onPress} : {onPress?: (event: GestureResponderEvent) => void})
 {
-  return <IconButton cancelable onPress={onPress} pressEffect="android-ripple" pressEffectColor="white" icon={() => <Icon name="arrow-back" style={{alignSelf: "flex-start"}} color='#ffffff' size={25} type="material" />} />
+  return <IconButton style={{padding: 0, margin: 0}} cancelable onPress={onPress} pressEffect="android-ripple" pressEffectColor="white" icon={() => <Icon name="arrow-back" style={{alignSelf: "flex-start"}} color='#ffffff' size={25} type="material" />} />
 
 }
 
@@ -166,7 +171,7 @@ function DotMenu(props: {open: boolean, setOpen: (open: boolean) => void})
 
 
 // https://reactnativeelements.com/docs/components/avatar#props
-function RenderAvatar(props: AvatarProps) {
+export function RenderAvatar(props: AvatarProps) {
   const defaultProps = {
     size: props.size ?? 32,
     rounded: true,
@@ -174,7 +179,7 @@ function RenderAvatar(props: AvatarProps) {
 
 
   const initialsOfName = props.name.split(" ").map((word) => word[0]).join("");
-  if (props.profilePicture) {
+  if (props.profilePicture && props.profilePicture !== "") {
     return <Avatar
       size={props.size ?? 32}
       rounded
@@ -185,9 +190,15 @@ function RenderAvatar(props: AvatarProps) {
   }
   else return <Avatar
     size={props.size ?? 32}
-    containerStyle={{ backgroundColor: "blue" }}
+    containerStyle={{ backgroundColor: getRandomColour() }}
     rounded
     title={initialsOfName}
   />
 }
 
+function getRandomColour()
+{
+  // Red, Green, Blue, Yellow, Magenta
+  const colours = ["#ff0000", "#009e00", "#0000ff", "#c4c402", "#ff00ff"];
+  return colours[Math.floor(Math.random() * colours.length)];
+}

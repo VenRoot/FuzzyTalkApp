@@ -5,6 +5,7 @@ import { NavigationContainer, NavigationProp } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Header } from "@rneui/themed";
 import LinearGradient from 'react-native-linear-gradient';
+import { sendHello } from "../../ts/ws";
 
 export default function _Header({navigation}: {navigation: NavigationProp<any>})
 {
@@ -27,6 +28,10 @@ export default function _Header({navigation}: {navigation: NavigationProp<any>})
 
     onLongPress={() => {
       navigation.navigate("ExampleTest");
+    }}
+
+    onPress={() => {
+      sendHello();
     }}
       >
         FuzzyTalk

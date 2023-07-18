@@ -1,13 +1,20 @@
 import React, { useEffect } from "react"
 import { NavigationProp, useNavigation } from "@react-navigation/native"
-import { Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator} from "react-native"
+import { Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator, Modal, GestureResponderEvent, StyleSheet, Pressable} from "react-native"
 import Toast, {ToastConfig} from "react-native-toast-message"
 import FirstNames from "../../Assets/first-names.json"
 import LastNames from "../../Assets/last-names.json"
 import { Navigations } from "../../types/Navigations"
+import {Chat, PrivateChat} from "../../types/Chat";
+import { useAppSelector, useAppDispatch } from "../../ts/global/hooks"
+import * as messageSlice from "../../ts/global/slices/messages"
+import * as chatSlice from "../../ts/global/slices/chats"
+import chatListStatesReducer, { initialChatListState } from "../../ts/reducers/ChatList"
+import ChatListError from "../../Components/Main/Error"
+import { RenderAvatar } from "../Chat/Header"
+import { Message } from "../../types/Message"
 
-
-export default function ChatList({navigation}: {navigation: NavigationProp<any>})
+export function ChatList({navigation}: {navigation: NavigationProp<any>})
 {
     const [retry, setRetry] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
@@ -71,52 +78,206 @@ export default function ChatList({navigation}: {navigation: NavigationProp<any>}
     </View>
 }
 
-function ChatListItem({name, pic, navigation}: {name: string, pic: string, navigation: NavigationProp<any>})
+
+
+export default function NewChatList({navigation}: {navigation: NavigationProp<any>})
 {
-    // Pick a number between 1 and 7
-    const num = Math.floor(Math.random() * 7) + 1;
-    const message = generateRandomMessages();
+    const [state, dispatch] = React.useReducer(chatListStatesReducer, initialChatListState);
+
+    const ChatListDispatch = useAppDispatch();
+    const chats = useAppSelector((state) => state.chats);
+    const { messages } = useAppSelector((state) => state.messages);
+
+        // Load the function getAllProfilePics() and set the state of pics to the result
+        useEffect(() => {
+            const fetchProfilePictures = async () => {
+                dispatch({type: "SET_RETRY", payload: false});
+                let pics;
+    
+                try {
+                    pics = await getAllProfilePics()
+                }
+                catch(err)  {
+                    console.error(err);
+                    dispatch({type: "SET_ERROR", payload: true});
+                    dispatch({type: "SET_LOADING", payload: false});
+                    return; // Verlässt die Funktion fetchProfilePictures, wenn ein Fehler auftritt
+                }
+                dispatch({type: "SET_ERROR", payload: false});
+                dispatch({type: "SET_PICS", payload: pics as any});
+                dispatch({type: "SET_LOADING", payload: false});
+            }
+            fetchProfilePictures();
+        }, [state.retry]);
+
+        if(state.loading) return <LoadingScreen />
+        if(state.error) return <ChatListError />
+        return <View style={{
+            backgroundColor: "#252525",
+            display: "flex",
+            flexDirection: "column",
+            padding: 10,
+            width: "100%",
+        }}>
+            <ScrollView>
+                {chats.messages.map((chat, i) => <NewChatListItem chat={chat} navigation={navigation} key={i} 
+                latestMessage={getMessageWithHighestId(messages, chat.id) || undefined}/>)}
+            </ScrollView>
+        </View>
+
+}
+
+function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, latestMessage?: Message})
+{
+    const {chat, navigation, latestMessage} = props;
+    const [modal, setModal] = React.useState<string>("");
     const showToast = makeMessageToast({
         text: "Hello World",
-        profilePicture: pic,
+        profilePicture: (chat as Chat.PrivateChat).user.profilePicture,
         name: "John Doe"
     });
 
     const handlePress = () => {
-        navigation.navigate<Navigations>("ChatWindow", {name: name, profilePicture: pic, lastSeen: new Date() });
+        navigation.navigate<Navigations>("ChatWindow", {name: `${(chat as Chat.PrivateChat).first_name || ""} ${(chat as Chat.PrivateChat).last_name || ""}`, profilePicture: (chat as Chat.PrivateChat).user.profilePicture, lastSeen: new Date().toISOString(), chatId: chat.id });
     }
 
-    return <TouchableOpacity
+    const handleLongPress = (event: GestureResponderEvent) => {
+        console.log(event.target);
+        setModal("Hello World");
+    }
+
+    const fullName = `${(chat as Chat.PrivateChat).first_name || ""} ${(chat as Chat.PrivateChat).last_name || ""}`;
+
+    let chatMessage = "";
+    if(latestMessage?.photo) chatMessage = "Photo: ";
+    else if(latestMessage?.animation) chatMessage = "GIF: ";
+    else if(latestMessage?.video) chatMessage = "Video: ";
+    else if(latestMessage?.audio) chatMessage = "Audio: ";
+
+    if(latestMessage?.text) chatMessage += latestMessage.text;
+    if(latestMessage?.voice) chatMessage = "Voice Message";
+
+    return <View>
+    <View style={styles.centeredView}>
+        <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modal.length !== 0}
+            onRequestClose={() => setModal("")}
+            onDismiss={() => setModal("")}>
+            <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <ModalOption setModal={setModal} name="Message" option={showToast} />
+                </View>
+            </View>
+        </Modal>
+    </View>
+    <TouchableOpacity
     onPress={handlePress}
+    onLongPress={handleLongPress}
     style={{
         display: "flex",
         flexDirection: "row",
         marginBottom: 10
 
     }}>
-        <Image
-        source={{
-            uri: pic as string,
-            width: 50,
-            height: 50
-        }} 
-        style={{
-            borderRadius: 50,
-            flex: 0
-        }} />
-        
-        <View style={{ flex: 1, paddingLeft: 10, }}>
+        {
+            <RenderAvatar name={fullName} size={50} profilePicture={(chat as Chat.PrivateChat).user.profilePicture} /> 
+        }
+
+        <View style={{ flex: 1, paddingLeft: 10, backgroundColor: "#252525" }}>
             <Text style={{
                 color: "white",
                 fontSize: 20,
-            }}>{name}</Text>
+            }}>{fullName}</Text>
             <Text
             style={{
                 color: "white",
-            }}>{message}</Text>
+            }}>{chatMessage}</Text>
         </View>
         
     </TouchableOpacity>
+</View>;
+
+    
+}
+
+function ChatListItem({name, pic, navigation}: {name: string, pic: string, navigation: NavigationProp<any>})
+{
+    // Pick a number between 1 and 7
+    const num = Math.floor(Math.random() * 7) + 1;
+    const message = generateRandomMessages();
+    const [modal, setModal] = React.useState<string>("");
+    const showToast = makeMessageToast({
+        text: "Hello World",
+        profilePicture: pic,
+        name: "John Doe"
+    });
+
+    console.log(modal);
+
+    const handlePress = () => {
+        navigation.navigate<Navigations>("ChatWindow", {name: name, profilePicture: pic, lastSeen: new Date().toISOString() });
+    }
+
+    const handleLongPress = (event: GestureResponderEvent) => {
+        console.log(event.target);
+        setModal("Hello World");
+    }
+
+    return (
+    <View>
+        <View style={styles.centeredView}>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modal.length !== 0}
+                onRequestClose={() => setModal("")}
+                onDismiss={() => setModal("")}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <ModalOption setModal={setModal} name="Message" option={showToast} />
+                    </View>
+                </View>
+            </Modal>
+        </View>
+        <TouchableOpacity
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        style={{
+            display: "flex",
+            flexDirection: "row",
+            marginBottom: 10
+
+        }}>
+            {
+                pic ? <Image
+                source={{
+                    uri: pic as string,
+                    width: 50,
+                    height: 50
+                }} 
+                style={{
+                    borderRadius: 50,
+                    flex: 0
+                }} /> : <RenderAvatar name={name} size={50} />
+            }
+            
+
+            <View style={{ flex: 1, paddingLeft: 10, }}>
+                <Text style={{
+                    color: "white",
+                    fontSize: 20,
+                }}>{name}</Text>
+                <Text
+                style={{
+                    color: "white",
+                }}>{message}</Text>
+            </View>
+            
+        </TouchableOpacity>
+    </View>
+    );
 }
 
 function LoadingScreen()
@@ -130,7 +291,7 @@ function LoadingScreen()
     </View>
 }
 
-function makeMessageToast({text, profilePicture, name}: {text: string, profilePicture: string, name: string})
+function makeMessageToast({text, profilePicture, name}: {text: string, profilePicture?: string, name: string})
 {
     return () => {
         Toast.show({
@@ -252,3 +413,79 @@ function generateRandomMessages()
         return messages[Math.floor(Math.random() * messages.length)];
       
 }
+
+function ModalOption({setModal, name, option}: {setModal: (modal: string) => void, name: string, option: Function})
+{
+    return <Pressable
+    style={[styles.button, styles.buttonClose]}
+    onPress={() => {
+        option();
+        setModal("")
+    }}>
+    <Text style={styles.textStyle}>{name}</Text>
+  </Pressable>
+}
+
+
+const styles = StyleSheet.create({
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 22,
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: 'white',
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+    },
+    buttonOpen: {
+      backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+      backgroundColor: '#2196F3',
+    },
+    textStyle: {
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: 'center',
+      color: "black"
+    },
+  });
+
+
+
+  function getMessageWithHighestId(messages: Message[], chatId: number): Message | null {
+    let maxMessageId = -1;
+    let maxMessage: Message | null = null;
+  
+    for (const message of messages) {
+      if (message.chat.id === chatId) {
+        if (message.message_id > maxMessageId) {
+          maxMessageId = message.message_id;
+          maxMessage = message;
+        }
+      }
+    }
+  
+    return maxMessage;
+  }

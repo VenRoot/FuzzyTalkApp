@@ -1,14 +1,18 @@
 import { FlatList, Text, View } from "react-native"
 import { StyleSheet } from "react-native"
+import Message from "../../types/Message";
 
 
-export default function Bubble({text, self}: {text: string, self: boolean})
+export default function Bubble({message}: {message: Message})
 {
+    const self = message.from.id === message.chat.id;
     return (
         <View style={self ? styles.chatBubbleRight : styles.chatBubble}>
-            <Text>
-                {text}
-            </Text>
+            <View style={{padding: "5%"}}>
+                <Text style={styles.chatBubbleText}>
+                    {message.text || "No message"}
+                </Text>
+            </View>
         </View>
     )
 }
@@ -24,12 +28,13 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginRight: 50,
         marginLeft: 10,
-        width: '60%',
+        maxWidth: '60%',
+        minWidth: "10%",
         alignSelf: 'flex-start'
     },
 
     chatBubbleRight: {
-        backgroundColor: '#0b93f6',
+        backgroundColor: '#000000',
         borderColor: "#bebebe",
         borderWidth: 1,
         borderRadius: 50,
@@ -38,7 +43,15 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginRight: 10,
         marginLeft: 50,
-        width: '60%',
+        maxWidth: '60%',
+        minWidth: "10%",
         alignSelf: 'flex-end'
+    },
+
+    chatBubbleText: {
+        color: '#eeeeee',
+        fontSize: 15,
+        lineHeight: 24,
+        fontFamily: "Arial"
     }
 });

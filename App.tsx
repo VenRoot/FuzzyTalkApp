@@ -35,6 +35,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import ExampleGiftedChat from "./src/examples/giftedChat/chat";
 import OwnGiftedChat from "./src/Components/Chat/giftedChat/GiftedChat";
+import { Provider } from 'react-redux';
+import store from './src/ts/global/store';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +112,7 @@ function App(): JSX.Element {
   return (
     <>
     <SafeAreaProvider>
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Main'>
         {/* We can either pass the component via the component prop */}
@@ -125,6 +128,7 @@ function App(): JSX.Element {
       </Stack.Navigator>
     </NavigationContainer>
     <Toast config={toastConfig} />
+    </Provider>
     </SafeAreaProvider>
     </>
     
