@@ -1,19 +1,49 @@
-import { FlatList, Text, View } from "react-native"
+import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native"
 import { StyleSheet } from "react-native"
 import Message from "../../types/Message";
+import { useAppSelector } from "../../ts/global/hooks";
+import { ActivityIndicator } from "@react-native-material/core";
 
 
 export default function Bubble({message}: {message: Message})
 {
-    const self = message.from.id === message.chat.id;
+
+    const user = useAppSelector((state) => state.user);
+    const msgIdAlert = () => 
+    Alert.alert("IDs", JSON.stringify(message, undefined, 2), [
+        {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+            style: "destructive",
+        }
+    ]);
+
+    const self = message.from.id === user.id;
     return (
-        <View style={self ? styles.chatBubbleRight : styles.chatBubble}>
-            <View style={{padding: "5%"}}>
-                <Text style={styles.chatBubbleText}>
-                    {message.text || "No message"}
-                </Text>
+        <>
+    <View style={{ position: 'relative', width: "auto" }}>
+        
+            <View style={self ? styles.chatBubbleRight : styles.chatBubble}>
+            <TouchableOpacity onPress={msgIdAlert}>
+                <View style={{padding: "5%"}}>
+                    <Text style={styles.chatBubbleText}>
+                        {message.text || "No message"}
+                    </Text>
+                    {self && message.status === "sending" && 
+                        <ActivityIndicator style={{ 
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                            left: "-100%",
+                        
+                        }} 
+                    />}       
+                </View>
+                </TouchableOpacity>
             </View>
-        </View>
+    </View>
+</>
+
+        
     )
 }
 

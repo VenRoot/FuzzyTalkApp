@@ -2,6 +2,7 @@ import { IconButton } from "@react-native-material/core";
 import { useState } from "react";
 import { View, TextInput } from "react-native";
 import { Icon } from "@rneui/themed";
+import { Animation, Video, PhotoSize } from "../../types/Message";
 
 export default function ChatInput(props: ChatInputProps)
 {
@@ -50,5 +51,6 @@ export default function ChatInput(props: ChatInputProps)
 
 interface ChatInputProps
 {
-    sendMessage: (message: string) => void;
+    // sendMessage: (message: string) => void;
+    sendMessage: (messageText?: string, animation?: Animation, video?: Video, photo?: PhotoSize[], caption?: string) => Promise<void>;
 }

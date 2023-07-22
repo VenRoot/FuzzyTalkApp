@@ -3,11 +3,11 @@ import { Chat } from "../../../types/Chat";
 import Scen01 from "../../../Templates/Chats/Scenario01";
 
 interface ChatState {
-    messages: Chat[];
+    chats: Chat[];
 }
 
 const initialState: ChatState = {
-    messages: Scen01,
+    chats: Scen01,
 };
 
 export const chatsSlice = createSlice({

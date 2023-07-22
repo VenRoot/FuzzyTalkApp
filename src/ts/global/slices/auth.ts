@@ -1,21 +1,21 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { User } from "../../../types/User";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const initialState: User = {
-    first_name: "Ven",
-    last_name: "Root",
+interface UserToken {
+    id: number;
+    token: string;
+}
+
+const initialState: UserToken = {
     id: -1,
-    is_bot: false,
-    username: "Ven",
-    language_code: "de",
+    token: "",
 };
 
 export const setUser = createAsyncThunk(
     "user/set",
-    async (user: User, { dispatch }) => {
+    async (user: UserToken, { dispatch }) => {
         try {
-            await AsyncStorage.setItem("user", JSON.stringify(user));
+            await AsyncStorage.setItem("usertoken", JSON.stringify(user));
             dispatch(userSlice.actions.setUserInState(user)); // dispatch action to update state
         } catch (e) {
             console.error(e);
@@ -28,7 +28,7 @@ export const getUser = createAsyncThunk(
     "user/get",
     async (_, { dispatch }) => {
         try {
-            const user = await AsyncStorage.getItem("user");
+            const user = await AsyncStorage.getItem("usertoken");
             if (!user) throw new Error("User not found");
             dispatch(userSlice.actions.setUserInState(JSON.parse(user))); // dispatch action to update state
         } catch (e) {
@@ -42,7 +42,7 @@ export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setUserInState: (state, action: PayloadAction<User>) => {
+        setUserInState: (state, action: PayloadAction<UserToken>) => {
             return action.payload;
         },
     },

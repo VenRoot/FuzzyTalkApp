@@ -9,7 +9,7 @@ export default class cMessage implements Message {
   from: User;
   date: number;
   chat: Chat;
-  status: "sending" | "sent" | "delivered" | "read" | "deleted";
+  status: "sending" | "sent" | "delivered" | "read" | "deleted" | "failed";
   text?: string;
   entities?: MessageEntity[];
   animation?: Animation;
@@ -32,7 +32,7 @@ export default class cMessage implements Message {
       from: User,
       date: number,
       chat: Chat,
-      status: "sending" | "sent" | "delivered" | "read" | "deleted",
+      status: "sending" | "sent" | "delivered" | "read" | "deleted" | "failed",
       text?: string,
       entities?: MessageEntity[],
       animation?: Animation,
@@ -81,7 +81,7 @@ export namespace Message {
         /** Date the message was sent in Unix time */
         date: number;
         chat: Chat;
-        status: "sending" | "sent" | "delivered" | "read" | "deleted";
+        status: "sending" | "sent" | "delivered" | "read" | "deleted" | "failed";
     }
     
     interface CommonMessage extends ServiceMessage {
@@ -132,6 +132,11 @@ export interface Message extends Message.MediaMessage {
     delete_chat_photo?: true;
     group_chat_created?: true;
     supergroup_chat_created?: true;
+    verified_from_backend?: boolean;
+}
+
+export interface TemporaryMessage extends Message {
+  requestId: string;
 }
 
 export interface MessageId {

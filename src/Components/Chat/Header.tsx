@@ -7,11 +7,9 @@ import { ChatWindowProps } from "../../Pages/ChatWindow";
 import { Menu, MenuOption, MenuOptions, MenuProvider, MenuTrigger } from "react-native-popup-menu";
 import { useEffect, useState } from "react";
 
-export default function _Header({lastSeen, name, navigation, profilePicture}: {lastSeen: Date, name: string, navigation: NavigationProp<any>, profilePicture: string | undefined}) {
+export default function _Header({lastSeen, name, navigation, profilePicture, onPress}: {lastSeen: Date, name: string, navigation: NavigationProp<any>, profilePicture: string | undefined, onPress?: (event: GestureResponderEvent) => void}) {
 
   const nav = navigation;
-
-  console.log(lastSeen);
 
   function pressBackButton(event: GestureResponderEvent) {
     if(nav?.canGoBack()) nav.goBack();
@@ -36,7 +34,8 @@ export default function _Header({lastSeen, name, navigation, profilePicture}: {l
           flexDirection: "row",
           width: "120%",
           justifyContent: "flex-start",
-        }}>
+        }}
+        >
           <RenderAvatar name={name} size={50} profilePicture={profilePicture} />
           <View style={{ width: "135%"}}>
             <Text style={{
@@ -52,6 +51,7 @@ export default function _Header({lastSeen, name, navigation, profilePicture}: {l
               textAlign: "left",
               alignSelf: "flex-start",
             }}
+            onPress={onPress}
             minimumFontScale={0.5}
             numberOfLines={1}
             >
@@ -101,10 +101,6 @@ function RenderBackButton({onPress} : {onPress?: (event: GestureResponderEvent) 
 function RenderMenuButton({onPress} : {onPress?: (event: GestureResponderEvent) => void})
 {
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    console.log("open changed");
-    console.log(open);
-  }, [open])
 
   return <>
     <MenuProvider>

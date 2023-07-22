@@ -120,7 +120,7 @@ export default function NewChatList({navigation}: {navigation: NavigationProp<an
             width: "100%",
         }}>
             <ScrollView>
-                {chats.messages.map((chat, i) => <NewChatListItem chat={chat} navigation={navigation} key={i} 
+                {chats.chats.map((chat, i) => <NewChatListItem chat={chat} navigation={navigation} key={i} 
                 latestMessage={getMessageWithHighestId(messages, chat.id) || undefined}/>)}
             </ScrollView>
         </View>
@@ -142,7 +142,6 @@ function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, la
     }
 
     const handleLongPress = (event: GestureResponderEvent) => {
-        console.log(event.target);
         setModal("Hello World");
     }
 
@@ -221,7 +220,6 @@ function ChatListItem({name, pic, navigation}: {name: string, pic: string, navig
     }
 
     const handleLongPress = (event: GestureResponderEvent) => {
-        console.log(event.target);
         setModal("Hello World");
     }
 

@@ -1,12 +1,16 @@
 import { Message } from "../../types/Message";
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./slices/messages";
+import messageReducer from "./slices/messages";
 import chatReducer from "./slices/chats";
+import userReducer from "./slices/user";
+import tempMessages from "./slices/tempMessages";
 
 const store = configureStore({
     reducer: {
-        messages: userReducer,
+        messages: messageReducer,
         chats: chatReducer,
+        user: userReducer,
+        tempMessages: tempMessages
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
