@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../../../types/User";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import users from "../../../Templates/Users/User01";
+
 
 const initialState: User = {
     first_name: "Ven",
@@ -9,6 +11,7 @@ const initialState: User = {
     is_bot: false,
     username: "Ven",
     language_code: "de",
+    profilePicture: "https://www.w3schools.com/howto/img_avatar.png",
 };
 
 export const setUser = createAsyncThunk(
@@ -45,10 +48,24 @@ export const userSlice = createSlice({
         setUserInState: (state, action: PayloadAction<User>) => {
             return action.payload;
         },
+        setNewUser: (state, action: PayloadAction<1 | 2 | 3>) => {
+            // Find the user in the state by the id
+            const user = users.find(user => user.id === action.payload);
+            if(!user) throw new Error("User not found");
+
+            // Remove all the properties from the state so even undefined properties from the new object are removed in the state
+            Object.keys(state).forEach(key => delete state[key as keyof User]);
+
+            // Assign the new user to the state
+            Object.assign(state, user);
+        }
     },
     extraReducers: (builder) => {
     }
 });
+
+
+export const { setUserInState, setNewUser } = userSlice.actions;
 
 export default userSlice.reducer;
 

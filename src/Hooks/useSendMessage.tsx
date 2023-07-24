@@ -60,7 +60,7 @@ export function useSendMessage(chatId: number, from: User, chat: Chat, addLocalM
             photo: photo,
             from: from,
             chat: chat,
-            date: Math.floor(Date.now() / 1000),
+            date: Date.now(),
             message_id: generateLocalMessageId(chat),
             status: "sending",
             caption: caption,

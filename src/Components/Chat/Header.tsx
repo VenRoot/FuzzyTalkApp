@@ -6,6 +6,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { ChatWindowProps } from "../../Pages/ChatWindow";
 import { Menu, MenuOption, MenuOptions, MenuProvider, MenuTrigger } from "react-native-popup-menu";
 import { useEffect, useState } from "react";
+import { RenderAvatar } from "../Avatar/avatar";
 
 export default function _Header({lastSeen, name, navigation, profilePicture, onPress}: {lastSeen: Date, name: string, navigation: NavigationProp<any>, profilePicture: string | undefined, onPress?: (event: GestureResponderEvent) => void}) {
 
@@ -85,11 +86,6 @@ export default function _Header({lastSeen, name, navigation, profilePicture, onP
 
 interface HeaderProps extends ChatWindowProps { }
 
-interface AvatarProps {
-  name: string;
-  profilePicture?: string;
-  size?: number;
-};
 
 
 function RenderBackButton({onPress} : {onPress?: (event: GestureResponderEvent) => void})
@@ -163,38 +159,4 @@ function DotMenu(props: {open: boolean, setOpen: (open: boolean) => void})
     </MenuOption>
   </MenuOptions>
 </Menu>
-}
-
-
-// https://reactnativeelements.com/docs/components/avatar#props
-export function RenderAvatar(props: AvatarProps) {
-  const defaultProps = {
-    size: props.size ?? 32,
-    rounded: true,
-  }
-
-
-  const initialsOfName = props.name.split(" ").map((word) => word[0]).join("");
-  if (props.profilePicture && props.profilePicture !== "") {
-    return <Avatar
-      size={props.size ?? 32}
-      rounded
-      source={{
-        uri: props.profilePicture,
-      }}
-    />
-  }
-  else return <Avatar
-    size={props.size ?? 32}
-    containerStyle={{ backgroundColor: getRandomColour() }}
-    rounded
-    title={initialsOfName}
-  />
-}
-
-function getRandomColour()
-{
-  // Red, Green, Blue, Yellow, Magenta
-  const colours = ["#ff0000", "#009e00", "#0000ff", "#c4c402", "#ff00ff"];
-  return colours[Math.floor(Math.random() * colours.length)];
 }

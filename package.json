@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "doctor": "react-native doctor",
     "lint": "eslint .",
     "start": "react-native start",
     "startimageserver": "ts-node ./imageServer.ts",

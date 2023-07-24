@@ -1,13 +1,14 @@
 import { Message } from "../../types/Message";
 import { Chat, GroupChat, PrivateChat, SupergroupChat } from "../../types/Chat";
 import Chats from "../Chats/Scenario01";
+import users from "../Users/User01";
 
 const messages: Message[] =
     [
         {
             message_id: 1,
             chat: Chats[0],
-            date: Date.now(),
+            date: new Date(2023, 1, 1, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[0] as PrivateChat).first_name,
                 is_bot: false,
@@ -23,7 +24,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[0],
-            date: Date.now(),
+            date: new Date(2023, 1, 1, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[0] as PrivateChat).first_name,
                 is_bot: false,
@@ -39,7 +40,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[1],
-            date: Date.now(),
+            date: new Date(2023, 1, 2, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[1] as PrivateChat).first_name,
                 is_bot: false,
@@ -55,7 +56,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[1],
-            date: Date.now(),
+            date: new Date(2023, 1, 2, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[1] as PrivateChat).first_name,
                 is_bot: false,
@@ -71,7 +72,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[2],
-            date: Date.now(),
+            date: new Date(2023, 1, 3, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[2] as PrivateChat).first_name,
                 is_bot: false,
@@ -87,7 +88,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[2],
-            date: Date.now(),
+            date: new Date(2023, 1, 3, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[2] as PrivateChat).first_name,
                 is_bot: false,
@@ -103,7 +104,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[3],
-            date: Date.now(),
+            date: new Date(2023, 1, 4, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[3] as PrivateChat).first_name,
                 is_bot: false,
@@ -119,7 +120,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[3],
-            date: Date.now(),
+            date: new Date(2023, 1, 4, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[3] as PrivateChat).first_name,
                 is_bot: false,
@@ -135,7 +136,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[4],
-            date: Date.now(),
+            date: new Date(2023, 1, 5, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[4] as PrivateChat).first_name,
                 is_bot: false,
@@ -151,7 +152,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[4],
-            date: Date.now(),
+            date: new Date(2023, 1, 5, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[4] as PrivateChat).first_name,
                 is_bot: false,
@@ -167,7 +168,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[5],
-            date: Date.now(),
+            date: new Date(2023, 1, 6, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[5] as PrivateChat).first_name,
                 is_bot: false,
@@ -183,7 +184,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[5],
-            date: Date.now(),
+            date: new Date(2023, 1, 6, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[5] as PrivateChat).first_name,
                 is_bot: false,
@@ -199,7 +200,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[6],
-            date: Date.now(),
+            date: new Date(2023, 1, 7, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[6] as PrivateChat).first_name,
                 is_bot: false,
@@ -215,7 +216,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[6],
-            date: Date.now(),
+            date: new Date(2023, 1, 7, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[6] as PrivateChat).first_name,
                 is_bot: false,
@@ -231,7 +232,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[7],
-            date: Date.now(),
+            date: new Date(2023, 1, 8, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[7] as PrivateChat).first_name,
                 is_bot: false,
@@ -247,7 +248,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[7],
-            date: Date.now(),
+            date: new Date(2023, 1, 8, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[7] as PrivateChat).first_name,
                 is_bot: false,
@@ -263,7 +264,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[8],
-            date: Date.now(),
+            date: new Date(2023, 1, 9, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[8] as PrivateChat).first_name,
                 is_bot: false,
@@ -279,7 +280,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[8],
-            date: Date.now(),
+            date: new Date(2023, 1, 9, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[8] as PrivateChat).first_name,
                 is_bot: false,
@@ -295,7 +296,7 @@ const messages: Message[] =
         {
             message_id: 1,
             chat: Chats[9],
-            date: Date.now(),
+            date: new Date(2023, 1, 10, 12, 0, 0).getTime(),
             from: {
                 first_name: (Chats[9] as PrivateChat).first_name,
                 is_bot: false,
@@ -311,7 +312,7 @@ const messages: Message[] =
         {
             message_id: 2,
             chat: Chats[9],
-            date: Date.now(),
+            date: new Date(2023, 1, 10, 12, 1, 0).getTime(),
             from: {
                 first_name: (Chats[9] as PrivateChat).first_name,
                 is_bot: false,

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { NavigationProp, useNavigation } from "@react-navigation/native"
 import { Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator, Modal, GestureResponderEvent, StyleSheet, Pressable} from "react-native"
 import Toast, {ToastConfig} from "react-native-toast-message"
@@ -7,12 +7,11 @@ import LastNames from "../../Assets/last-names.json"
 import { Navigations } from "../../types/Navigations"
 import {Chat, PrivateChat} from "../../types/Chat";
 import { useAppSelector, useAppDispatch } from "../../ts/global/hooks"
-import * as messageSlice from "../../ts/global/slices/messages"
-import * as chatSlice from "../../ts/global/slices/chats"
 import chatListStatesReducer, { initialChatListState } from "../../ts/reducers/ChatList"
 import ChatListError from "../../Components/Main/Error"
-import { RenderAvatar } from "../Chat/Header"
 import { Message } from "../../types/Message"
+import { RenderAvatar } from "../Avatar/avatar"
+import { User } from "../../types/User"
 
 export function ChatList({navigation}: {navigation: NavigationProp<any>})
 {
@@ -79,14 +78,44 @@ export function ChatList({navigation}: {navigation: NavigationProp<any>})
 }
 
 
+function sortMessages(chats: Chat[], messages: Message[])
+{
+    const chatsCopy = [...chats]; // Create a copy of the chats array, so we don't mutate the original state
+
+    chatsCopy.sort((a, b) => {
+        const aMessages = messages.filter((message) => message.chat.id === a.id);
+        const bMessages = messages.filter((message) => message.chat.id === b.id);
+
+        const aLastMessage = aMessages[aMessages.length - 1];
+        const bLastMessage = bMessages[bMessages.length - 1];
+
+        if(!aLastMessage && !bLastMessage) return 0; // If both chats have no messages, they are equal
+        else if(!aLastMessage) return 1; // If only b has messages, b comes first
+        else if(!bLastMessage) return -1; // If only a has messages, a comes first
+
+        // Compare the dates of the latest messages
+        const aDate = new Date(aLastMessage.date);
+        const bDate = new Date(bLastMessage.date);
+
+        // Sort in descending order
+        return bDate.getTime() - aDate.getTime();
+    });
+    return chatsCopy;
+}
+
+
 
 export default function NewChatList({navigation}: {navigation: NavigationProp<any>})
 {
     const [state, dispatch] = React.useReducer(chatListStatesReducer, initialChatListState);
 
-    const ChatListDispatch = useAppDispatch();
-    const chats = useAppSelector((state) => state.chats);
-    const { messages } = useAppSelector((state) => state.messages);
+    const chats = useAppSelector((state) => state.chats).chats;
+    const messages = useAppSelector((state) => state.messages).messages;
+
+    const sortedChats = useMemo(() => sortMessages(chats, messages), [messages])
+
+
+    const user = useAppSelector((state) => state.user);
 
         // Load the function getAllProfilePics() and set the state of pics to the result
         useEffect(() => {
@@ -120,14 +149,14 @@ export default function NewChatList({navigation}: {navigation: NavigationProp<an
             width: "100%",
         }}>
             <ScrollView>
-                {chats.chats.map((chat, i) => <NewChatListItem chat={chat} navigation={navigation} key={i} 
+                {sortedChats.map((chat, i) => <NewChatListItem chat={chat} navigation={navigation} key={i} user={user}
                 latestMessage={getMessageWithHighestId(messages, chat.id) || undefined}/>)}
             </ScrollView>
         </View>
 
 }
 
-function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, latestMessage?: Message})
+function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, latestMessage?: Message, user: User})
 {
     const {chat, navigation, latestMessage} = props;
     const [modal, setModal] = React.useState<string>("");
@@ -156,6 +185,8 @@ function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, la
     if(latestMessage?.text) chatMessage += latestMessage.text;
     if(latestMessage?.voice) chatMessage = "Voice Message";
 
+    const self = (chat as Chat.PrivateChat).id === props.user.id;
+
     return <View>
     <View style={styles.centeredView}>
         <Modal
@@ -181,6 +212,7 @@ function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, la
 
     }}>
         {
+            self ? <RenderAvatar name="Yourself" size={50} profilePicture="https://i.imgur.com/7bXW6ZQ.png" /> :
             <RenderAvatar name={fullName} size={50} profilePicture={(chat as Chat.PrivateChat).user.profilePicture} /> 
         }
 
@@ -188,11 +220,20 @@ function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, la
             <Text style={{
                 color: "white",
                 fontSize: 20,
-            }}>{fullName}</Text>
+            }}>{ self ? "Yourself" : fullName}</Text>
             <Text
             style={{
                 color: "white",
+                width: "80%"
             }}>{chatMessage}</Text>
+            <Text
+            style={{
+                color: "white",
+                fontSize: 10,
+                position: "absolute",
+                right: 10,
+                bottom: 10
+            }}>{latestMessage ? new Date(latestMessage.date).toLocaleTimeString().split(":").slice(0, 2).join(":") : ""}</Text>
         </View>
         
     </TouchableOpacity>
@@ -484,6 +525,5 @@ const styles = StyleSheet.create({
         }
       }
     }
-  
     return maxMessage;
   }
