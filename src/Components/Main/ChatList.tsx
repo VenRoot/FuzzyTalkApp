@@ -13,71 +13,6 @@ import { Message } from "../../types/Message"
 import { RenderAvatar } from "../Avatar/avatar"
 import { User } from "../../types/User"
 
-export function ChatList({navigation}: {navigation: NavigationProp<any>})
-{
-    const [retry, setRetry] = React.useState(false);
-    const [loading, setLoading] = React.useState(true);
-    const [pics, setPics] = React.useState<string[]>([]);
-    const [error, setError] = React.useState(false);
-
-    // Load the function getAllProfilePics() and set the state of pics to the result
-    useEffect(() => {
-        const fetchProfilePictures = async () => {
-            setRetry(false);
-            let pics;
-
-            try {
-                pics = await getAllProfilePics()
-            }
-            catch(err)  {
-                console.error(err);
-                setError(true);
-                setLoading(false);
-                return; // Verlässt die Funktion fetchProfilePictures, wenn ein Fehler auftritt
-            }
-            setError(false);
-            setPics(pics as any);
-            setLoading(false);
-        }
-        fetchProfilePictures();
-    }, [retry]);
-
-    if(loading) return <LoadingScreen />
-    if(error) return <View>
-            <Text style={{
-            color: "black"
-        }}>
-            There was an error fetching the data. Please try again later.
-        </Text>
-        <TouchableOpacity
-        onPress={() => setRetry(true)}
-        style={{
-            backgroundColor: "#0b93f6",
-            padding: 10,
-            borderRadius: 10,
-            marginTop: 10
-        }}>
-            <Text style={{
-                color: "white"
-            }}>Retry</Text>
-        </TouchableOpacity>
-        </View>
-        
-    return <View style={{
-        backgroundColor: "#252525",
-        display: "flex",
-        flexDirection: "column",
-        padding: 10,
-        width: "100%",
-    }}>
-        <ScrollView>
-
-            {(new Array(50)).fill(0).map((_, i) => <ChatListItem name={generateRandomName()} navigation={navigation} pic={pics[Math.floor(Math.random() * pics.length)]} key={i} />)} 
-        </ScrollView>
-    </View>
-}
-
-
 function sortMessages(chats: Chat[], messages: Message[])
 {
     const chatsCopy = [...chats]; // Create a copy of the chats array, so we don't mutate the original state
@@ -108,7 +43,7 @@ function sortMessages(chats: Chat[], messages: Message[])
 export default function NewChatList({navigation}: {navigation: NavigationProp<any>})
 {
     const [state, dispatch] = React.useReducer(chatListStatesReducer, initialChatListState);
-
+    const [tries, setTries] = React.useState<number>(0);
     const chats = useAppSelector((state) => state.chats).chats;
     const messages = useAppSelector((state) => state.messages).messages;
 
@@ -140,7 +75,7 @@ export default function NewChatList({navigation}: {navigation: NavigationProp<an
         }, [state.retry]);
 
         if(state.loading) return <LoadingScreen />
-        if(state.error) return <ChatListError />
+        if(state.error) return <ChatListError tries={tries} />
         return <View style={{
             backgroundColor: "#252525",
             display: "flex",
@@ -240,83 +175,6 @@ function NewChatListItem(props: {chat: Chat, navigation: NavigationProp<any>, la
 </View>;
 
     
-}
-
-function ChatListItem({name, pic, navigation}: {name: string, pic: string, navigation: NavigationProp<any>})
-{
-    // Pick a number between 1 and 7
-    const num = Math.floor(Math.random() * 7) + 1;
-    const message = generateRandomMessages();
-    const [modal, setModal] = React.useState<string>("");
-    const showToast = makeMessageToast({
-        text: "Hello World",
-        profilePicture: pic,
-        name: "John Doe"
-    });
-
-    console.log(modal);
-
-    const handlePress = () => {
-        navigation.navigate<Navigations>("ChatWindow", {name: name, profilePicture: pic, lastSeen: new Date().toISOString() });
-    }
-
-    const handleLongPress = (event: GestureResponderEvent) => {
-        setModal("Hello World");
-    }
-
-    return (
-    <View>
-        <View style={styles.centeredView}>
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modal.length !== 0}
-                onRequestClose={() => setModal("")}
-                onDismiss={() => setModal("")}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <ModalOption setModal={setModal} name="Message" option={showToast} />
-                    </View>
-                </View>
-            </Modal>
-        </View>
-        <TouchableOpacity
-        onPress={handlePress}
-        onLongPress={handleLongPress}
-        style={{
-            display: "flex",
-            flexDirection: "row",
-            marginBottom: 10
-
-        }}>
-            {
-                pic ? <Image
-                source={{
-                    uri: pic as string,
-                    width: 50,
-                    height: 50
-                }} 
-                style={{
-                    borderRadius: 50,
-                    flex: 0
-                }} /> : <RenderAvatar name={name} size={50} />
-            }
-            
-
-            <View style={{ flex: 1, paddingLeft: 10, }}>
-                <Text style={{
-                    color: "white",
-                    fontSize: 20,
-                }}>{name}</Text>
-                <Text
-                style={{
-                    color: "white",
-                }}>{message}</Text>
-            </View>
-            
-        </TouchableOpacity>
-    </View>
-    );
 }
 
 function LoadingScreen()

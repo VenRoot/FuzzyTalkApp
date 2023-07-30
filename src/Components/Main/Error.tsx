@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import chatListReducer, { initialChatListState } from "../../ts/reducers/ChatList"
 
-export default function Error() {
+export default function Error({tries}: {tries: number}) {
     const [state, dispatch] = React.useReducer(chatListReducer, initialChatListState);
     return <View>
     <Text style={{
@@ -21,7 +21,7 @@ style={{
 }}>
     <Text style={{
         color: "white"
-    }}>Retry</Text>
+    }}>Retry ({tries})</Text>
 </TouchableOpacity>
 </View>
 }

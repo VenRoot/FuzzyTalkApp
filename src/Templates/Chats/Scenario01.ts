@@ -8,56 +8,11 @@ const chats: Chat[] =
             id: user.id,
             first_name: user.first_name,
             last_name: user.last_name,
-            type: "private",
+            type: "private" as "private",
             username: user.username,
             user: user
-        } as Chat
+        }
     }),
-    // {
-    //     id: 1,
-    //     first_name: "Chat",
-    //     last_name: "One",
-    //     type: "private",
-    //     username: "Chat1",
-    //     user: {
-    //         id: 1,
-    //         first_name: "Chat",
-    //         last_name: "One",
-    //         username: "Chat1",
-    //         is_bot: false,
-    //         profilePicture: "",
-    //     }
-    // },
-    // {
-    //     id: 2,
-    //     first_name: "Chat",
-    //     last_name: "Second",
-    //     type: "private",
-    //     username: "Chat2",
-    //     user: {
-    //         id: 2,
-    //         first_name: "Chat",
-    //         last_name: "Second",
-    //         username: "Chat2",
-    //         is_bot: false,
-    //         profilePicture: "",
-    //     }
-    // },
-    // {
-    //     id: 3,
-    //     first_name: "Chat",
-    //     last_name: "Third",
-    //     type: "private",
-    //     username: "Chat3",
-    //     user: {
-    //         id: 3,
-    //         first_name: "Chat",
-    //         last_name: "Third",
-    //         username: "Chat3",
-    //         is_bot: false,
-    //         profilePicture: "",
-    //     }
-    // },
     {
         id: 4,
         first_name: "Chat",

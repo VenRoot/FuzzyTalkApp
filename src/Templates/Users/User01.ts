@@ -5,7 +5,7 @@ const users: User[] = [
         first_name: "Ven",
         id: 1,
         is_bot: false,
-        language_code: "de",
+        language_code: "en",
         last_name: "Root",
         profilePicture: "https://www.w3schools.com/howto/img_avatar.png",
         username: "Ven"

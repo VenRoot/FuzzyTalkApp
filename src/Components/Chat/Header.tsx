@@ -61,6 +61,7 @@ export default function _Header({lastSeen, name, navigation, profilePicture, onP
             </Text>
             <Text style={{
               paddingLeft: 10,
+              color: "white"
             }}>
               last seen {new Date(lastSeen).toLocaleTimeString().split(":").slice(0, 2).join(":")}
             </Text>
